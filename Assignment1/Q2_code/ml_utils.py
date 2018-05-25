@@ -7,7 +7,6 @@ import re
 def extractDateCountryViews(record):
 	#input 18 features
 	#output ((video_id, country), (trending_date, views))
-
 	try:
 		parts = re.split(r',(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)', record)
 		video_id = parts[0]
