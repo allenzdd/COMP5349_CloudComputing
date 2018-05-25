@@ -62,6 +62,7 @@ def flatCounKey(record):
 	#Input (country, (value1, value2, ...))
 	#Output (country; video_id, percentage)
 	key, values = record
+	#flat
 	output = ["{}; {}, {:.1%}".format(key, val[0], float(val[1])) for val in values]
 	return output
 
