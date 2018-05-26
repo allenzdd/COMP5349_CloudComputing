@@ -7,18 +7,18 @@ edit by Dongdong Zhang 26 April 2018
 import sys
 import re
 
+
 def mapper(Coun1, Coun2):
     """ This mapper select tags and return the tag-owner information.
     Input format:  18 features
     Output format: category \t video_id, country
     """
-
     for line in sys.stdin:
         # Clean input and split it
         parts = re.split(r',(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)', line)
 
         if len(parts) < 18:
-          continue
+            continue
 
         country = parts[-1].strip()
 
