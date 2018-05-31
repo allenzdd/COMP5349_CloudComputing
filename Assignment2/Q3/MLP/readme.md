@@ -1,0 +1,1 @@
+if you want to run this code, please run q3_submit.sh "num executors"  "cores" "blocksize"
