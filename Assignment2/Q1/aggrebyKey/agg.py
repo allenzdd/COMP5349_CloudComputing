@@ -5,8 +5,7 @@ edit by Dongdong Zhang
 
 from pyspark.sql import SparkSession
 import argparse
-from q1_utils import *
-from q1_other_function import *
+from utils import *
 from pyspark.ml.feature import PCA
 from pyspark.sql.functions import *
 from time import time
@@ -34,3 +33,21 @@ if __name__ == "__main__":
     # read data and assembler and PCA with pipeline
     train_vector_pca, test_vector_pca = pipeline_assembler_pca(
         spark, train_datafile, test_datafile, k=k_PCA)
+
+    cart_test_train = test_vector_pca.rdd.zipWithIndex().cartesian(train_vector_pca.rdd)
+
+    dist_test_train = cart_test_train.map(dist)
+
+    ag = dist_test_train.aggregateByKey(
+        [(1e+10, 0.0), (1e+10, 0.0), (1e+10, 0.0), (1e+10, 0.0), (1e+10, 0.0)], combineRecord, mergeReducer, 10)
+
+    print(ag.collect())
+
+    selectLab = ag.map(selectLabel)
+
+    res = selectLab.collect()
+
+    print(res)
+    print("_--------------------------_---------------------_----------")
+
+    print(len(res))

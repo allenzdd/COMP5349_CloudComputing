@@ -56,6 +56,38 @@ def pipeline_assembler_pca(Spark, trainDat, testDat, k=50):
         col(train_df.columns[0]).alias("label"), "features_pcas")
     # transform test data
     test_pca_result = model.transform(test_df).select(
-        col(test_df.columns[0]).alias("label"), "features_pcas") \
-        .repartition(repartition_test)  # add repartition
+        col(test_df.columns[0]).alias("label"), "features_pcas")
     return train_pca_result, test_pca_result
+
+
+def dist(record):
+    test_record, train = record
+    test, index = test_record
+    dist = float(np.linalg.norm(test[1] - train[1]))
+    return ((index, float(test[0])), (dist, float(train[0])))
+
+
+def combineRecord(accumulatedPair, currentRecord):
+    train_list = accumulatedPair
+    train_list.append(currentRecord)
+    train_list = sorted(train_list, key=lambda s: s[0], reverse=False)[:5]
+
+    return train_list
+
+
+def mergeReducer(accumulate1, accumulate2):
+    accumulate1.extend(accumulate2)
+    accumulate1 = sorted(accumulate1, key=lambda s: s[0], reverse=False)[:5]
+    return accumulate1
+
+
+def selectLabel(record):
+    keys, values = record
+    topK_label = [x[1] for x in values]
+
+    # print(topK_label.collect())
+
+    counts_test = np.bincount(topK_label)
+    Most_test = np.argmax(counts_test)
+
+    return keys[1], Most_test
